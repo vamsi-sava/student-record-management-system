@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Student Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>body{background-color:#f4f5f7;}.bg-charcoal{background-color:#262626!important;}.text-yellow{color:#facc15!important;}.btn-yellow{background-color:#facc15;color:#262626;font-weight:600;}</style>
+</head>
+<body>
+    <nav class="navbar bg-charcoal navbar-dark p-3 shadow-sm">
+        <div class="container">
+            <span class="navbar-brand fw-bold text-white"><span class="text-yellow">STUDENT MANAGEMENT</span> RECORD SYSTEM</span>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">Exit System</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-5">
+                <div class="card p-3 shadow-sm border-0">
+                    <h6 class="fw-bold text-secondary">Search Student Record</h6>
+                    <form method="GET" class="d-flex gap-2">
+                        <input type="number" name="search_id" class="form-control" placeholder="Enter Student ID">
+                        <button type="submit" class="btn btn-dark">Search</button>
+                        <a href="/dashboard" class="btn btn-light border">Clear</a>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-7 d-flex align-items-end justify-content-end">
+                <button class="btn btn-yellow btn-lg shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#addModal">+ Add New Student Record</button>
+            </div>
+        </div>
+
+        <div class="card shadow border-0 p-3">
+            <h5 class="fw-bold mb-3 text-dark">------- Student Records --------</h5>
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr><th>ID</th><th>Name</th><th>Department</th><th>Year</th><th>Sem</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>Total</th><th>%</th><th>Grade</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td><b>{{ s.Student_ID }}</b></td><td>{{ s.Name }}</td><td>{{ s.Department }}</td><td>{{ s.Year }}</td><td>{{ s.Semester }}</td>
+                        <td>{{ s.Subject1 }}</td><td>{{ s.Subject2 }}</td><td>{{ s.Subject3 }}</td><td>{{ s.Subject4 }}</td><td>{{ s.Subject5 }}</td>
+                        <td><b>{{ s.Total }}</b></td><td>{{ s.Perecentage }}%</td><td><span class="badge bg-dark text-yellow border border-warning">{{ s.Grade }}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-dark py-0" data-bs-toggle="modal" data-bs-target="#editModal{{ s.Student_ID }}">Update</button>
+                            <a href="/delete/{{ s.Student_ID }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Are you sure you want to delete?');">Delete</a>
+                        </td>
+                    </tr>
+
+                    <div class="modal fade" id="editModal{{ s.Student_ID }}" Settlement="-1">
+                        <div class="modal-dialog"><div class="modal-content"><form action="/update/{{ s.Student_ID }}" method="POST">
+                            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Update Record: {{ s.Student_ID }}</h5></div>
+                            <div class="modal-body">
+                                <div class="mb-2"><label class="form-label small">Name</label><input type="text" name="name" class="form-control" value="{{ s.Name }}" required></div>
+                                <div class="mb-2"><label class="form-label small">Department</label><input type="text" name="dept" class="form-control" value="{{ s.Department }}" required></div>
+                                <div class="row g-2 mb-2"><div class="col"><label class="small">Year</label><input type="number" name="year" class="form-control" value="{{ s.Year }}" required></div><div class="col"><label class="small">Semester</label><input type="number" name="sem" class="form-control" value="{{ s.Semester }}" required></div></div>
+                                <div class="row g-1"><div class="col"><label class="small">S1</label><input type="number" name="sub1" class="form-control" value="{{ s.Subject1 }}" required></div><div class="col"><label class="small">S2</label><input type="number" name="sub2" class="form-control" value="{{ s.Subject2 }}" required></div><div class="col"><label class="small">S3</label><input type="number" name="sub3" class="form-control" value="{{ s.Subject3 }}" required></div><div class="col"><label class="small">S4</label><input type="number" name="sub4" class="form-control" value="{{ s.Subject4 }}" required></div><div class="col"><label class="small">S5</label><input type="number" name="sub5" class="form-control" value="{{ s.Subject5 }}" required></div></div>
+                            </div>
+                            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-withdrawn="modal" data-bs-dismiss="modal">Close</button><button type="submit" class="btn btn-warning">Update Save</button></div>
+                        </form></div></div>
+                    </div>
+                    {% else %}
+                    <tr><td colspan="14" class="text-center text-muted py-4">No student records found inside database.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content"><form action="/add" method="POST">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Add Student Record Form</h5></div>
+            <div class="modal-body">
+                <div class="mb-2"><label class="form-label small">Student ID</label><input type="number" name="id" class="form-control" required></div>
+                <div class="mb-2"><label class="form-label small">Student Name</label><input type="text" name="name" class="form-control" required></div>
+                <div class="mb-2"><label class="form-label small">Department</label><input type="text" name="dept" class="form-control" required></div>
+                <div class="row g-2 mb-2"><div class="col"><label class="small">Year</label><input type="number" name="year" class="form-control" required></div><div class="col"><label class="small">Semester</label><input type="number" name="sem" class="form-control" required></div></div>
+                <div class="row g-1"><div class="col"><label class="small">S1</label><input type="number" name="sub1" class="form-control" max="100" required></div><div class="col"><label class="small">S2</label><input type="number" name="sub2" class="form-control" max="100" required></div><div class="col"><label class="small">S3</label><input type="number" name="sub3" class="form-control" max="100" required></div><div class="col"><label class="small">S4</label><input type="number" name="sub4" class="form-control" max="100" required></div><div class="col"><label class="small">S5</label><input type="number" name="sub5" class="form-control" max="100" required></div></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-warning">Save Record</button></div>
+        </form></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
